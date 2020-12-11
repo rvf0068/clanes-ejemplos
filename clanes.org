@@ -1,0 +1,140 @@
+#+title: Ejemplos de gráficas de clanes
+#+property: header-args:ipython :exports both :cache yes :session clanes-ejemplos :results raw drawer
+#+startup: inlineimages
+
+Vamos a usar la biblioteca [[https://networkx.org/][Networkx]], que es la biblioteca usual de
+Python para trabajar con gráficas, y con [[https://github.com/rvf0068/pycliques][pycliques]], que es una
+extensión de Networkx que estoy escribiendo para trabajar con clanes
+en gráficas.
+
+#+begin_src ipython
+import networkx as nx
+from pycliques.cliques import clique_graph as k
+from pycliques.helly import *
+from pycliques.dominated import *
+from pycliques.simplicial import *
+p = completely_pared_graph
+#+end_src
+
+#+RESULTS[501b5c2f8e342e1d770ad5fa042083f927ce9350]:
+:results:
+# Out[14]:
+:end:
+
+En Networkx podemos obtener gráficas aleatorias.
+
+#+begin_src ipython
+g = nx.gnp_random_graph(15, 0.7)
+nx.draw(g, with_labels=True)
+#+end_src
+
+#+RESULTS[5c90b29b61c64bb9c47fe6f51995604d06e326be]:
+:results:
+# Out[4]:
+[[file:./obipy-resources/iDb0wl.png]]
+:end:
+
+Decimos que una colección \(\mathcal{C}=\{X_{i}\}\) de subconjuntos de un conjunto
+\(X\) es *intersecante* si para todos \(i\ne i'\) se tiene que
+\(X_{i}\cap X_{i'}\ne\emptyset\). Decimos que la colección
+\(\mathcal{C}\) tiene la *propiedad de Helly* si toda subcolección
+intersecante \(\mathcal{C}'\subseteq \mathcal{C}\) es tal que existe
+\(x\in X\) con \(x\in X_{j}\) para todo \(X_{j}\in
+\mathcal{C}'\). Decimos que una gráfica \(G\) es *clan Helly* si la
+colección de sus clanes tiene la propiedad de Helly.
+
+#+begin_src ipython
+is_clique_helly(g)
+#+end_src
+
+#+RESULTS[84a318cf691da1915197d9f0a6625ff3fdc4debc]:
+:results:
+# Out[5]:
+: False
+:end:
+
+Una gráfica es *hereditariamente clan Helly* si todas sus subgráficas
+inducidas son Helly.
+
+#+begin_src ipython
+is_hereditary_clique_helly(g)
+#+end_src
+
+#+RESULTS[f050e4c99555e800266e0e60a3ac86c05b3bf51e]:
+:results:
+# Out[6]:
+: False
+:end:
+
+- Un vértice \(x\) en \(G\) es /dominado/ si existe \(y\in V(G)\),
+  \(y\ne x\) tal que \(z\sim x\) implica \(z\sim y\).
+- (Prisner, 1992) Si \(x\in V(G)\) es dominado, \(G-x\simeq G\).
+- La gráfica *podada* es la gráfica \(P(G)\) que resulta de \(G\)
+  eliminando sucesivamente todos los vértices dominados.
+
+#+begin_src ipython
+pg = p(g)
+pg.order(), pg.size()
+#+end_src
+
+#+RESULTS[12946e122b92d2cc6f9eb5278f2829bc2bd05ddb]:
+:results:
+# Out[11]:
+: (8, 21)
+:end:
+
+#+begin_src ipython
+nx.draw(pg, with_labels=True)
+#+end_src
+
+#+RESULTS[7195ed295ea02a68a545201014be43c8636a56bf]:
+:results:
+# Out[10]:
+[[file:./obipy-resources/GEAk1Q.png]]
+:end:
+
+#+begin_src ipython
+epg = complete_s_collapse_edges(pg)
+epg.order(), epg.size()
+#+end_src
+
+#+RESULTS[dc6f4891838dfe0666ead6a6af156c2edcfc2e28]:
+:results:
+# Out[12]:
+: (8, 21)
+:end:
+
+#+begin_src ipython
+vpg = complete_s_collapse(pg)
+vpg.order(), vpg.size()
+#+end_src
+
+#+RESULTS[d5fcbd9140a576c3d0ea7b528f8fd37834503ffa]:
+:results:
+# Out[13]:
+: (8, 21)
+:end:
+
+#+begin_src ipython
+ccg = clique_complex(pg)
+ccg.dong_matching()
+#+end_src
+
+#+RESULTS[18adb2a3982fc5f2155e6f91e095ac7f7a5a5fa8]:
+:results:
+# Out[15]:
+#+BEGIN_EXAMPLE
+  {frozenset({2, 13, 14}),
+  frozenset({2, 9, 14}),
+  frozenset({7, 13, 14}),
+  frozenset({7, 9, 14})}
+#+END_EXAMPLE
+:end:
+
+
+* COMMENT Local Variables
+
+# Local Variables:
+# org-confirm-babel-evaluate: nil
+# ispell-local-dictionary: "castellano"
+# End:
